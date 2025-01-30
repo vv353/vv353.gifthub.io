@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MCP</title>
+    <title>자기소개 프로그램</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 전체 내용을 가운데 정렬 */
         }
         .profile {
             display: flex;
@@ -31,8 +34,6 @@
         }
         .arrow {
             cursor: pointer;
-            text-align: center; /* 가운데 정렬 */
-            width: 30px; /* 고정된 너비 */
         }
         .delete {
             cursor: pointer;
@@ -40,6 +41,9 @@
         }
         .input-container {
             margin-bottom: 10px;
+        }
+        .button-container {
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -49,8 +53,8 @@
     <input type="file" id="profile-image-input" accept="image/*" onchange="updateProfileImage()">
     <img id="profile-image" src="profile.jpg" alt="프로필 사진">
     <div>
-        <input type="text" id="name-input" placeholder="이름">
-        <textarea id="introduction-input" placeholder="간단한 소개"></textarea>
+        <input type="text" id="name-input" placeholder="이름" oninput="updateName()">
+        <textarea id="introduction-input" placeholder="간단한 소개" oninput="updateIntroduction()"></textarea>
     </div>
 </div>
 
@@ -65,8 +69,10 @@
     <tbody id="category-list"></tbody>
 </table>
 
-<button onclick="generateLink()">링크 생성 및 공유</button>
-<p id="share-link"></p>
+<div class="button-container">
+    <button onclick="generateLink()">링크 생성 및 공유</button>
+    <p id="share-link"></p>
+</div>
 
 <script>
     const categories = [];
@@ -85,6 +91,14 @@
         }
     }
 
+    function updateName() {
+        // 이름 업데이트 로직
+    }
+
+    function updateIntroduction() {
+        // 소개 업데이트 로직
+    }
+
     function addCategory() {
         const categoryInput = document.getElementById('category-input');
         const descriptionInput = document.getElementById('description-input');
@@ -101,10 +115,8 @@
         categoryList.appendChild(row);
 
         categories.push({ category: categoryInput.value, description: descriptionInput.value });
-
-        // 입력란 초기화
-        document.getElementById('category-input').value = '';
-        document.getElementById('description-input').value = '';
+        categoryInput.value = '';
+        descriptionInput.value = '';
     }
 
     function moveUp(element) {
