@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정보 보기</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .profile-info {
+            margin-bottom: 20px;
+        }
+        .profile-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #ccc;
+            background-size: cover;
+            margin-bottom: 10px;
+        }
+        h2, h3 {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="profile-info">
+        <div class="profile-image" id="profileImage"></div>
+        <h2 id="name"></h2>
+        <p id="introduction"></p>
+        <h3>카테고리</h3>
+        <ul id="categories"></ul>
+    </div>
+
+    <script>
+        // URL 파라미터에서 데이터 가져오기
+        const params = new URLSearchParams(window.location.search);
+        const data = JSON.parse(decodeURIComponent(params.get('data')));
+
+        // 데이터 표시
+        document.getElementById('name').textContent = data.name;
+        document.getElementById('introduction').textContent = data.introduction;
+        document.getElementById('profileImage').style.backgroundImage = `url(${data.profileImage})`;
+
+        const categoriesList = document.getElementById('categories');
+        const categories = data.categories.split('|');
+        categories.forEach(category => {
+            const li = document.createElement('li');
+            li.textContent = category;
+            categoriesList.appendChild(li);
+        });
+    </script>
+
+</body>
+</html>
