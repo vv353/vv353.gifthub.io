@@ -61,7 +61,7 @@
         <input type="file" id="profile-image-input" accept="image/*" onchange="updateProfileImage()" style="display: none;">
         <div class="file-buttons" id="file-buttons">
             <button onclick="document.getElementById('profile-image-input').click()">파일 선택</button>
-            <button onclick="pasteImage()">붙여넣기</button>
+            <button onclick="document.execCommand('paste')">붙여넣기</button>
         </div>
     </div>
     <div>
@@ -87,21 +87,6 @@
         const profileImage = document.getElementById('profile-image');
         profileImage.src = src;
         document.getElementById('file-buttons').style.display = 'block'; // 파일 버튼 보이기
-    }
-
-    function pasteImage() {
-        navigator.clipboard.read().then(data => {
-            for (const item of data) {
-                const blob = item.getType('image/png');
-                if (blob) {
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        updateProfileImage(event.target.result);
-                    };
-                    blob.then(b => reader.readAsDataURL(b));
-                }
-            }
-        });
     }
 
     function showFileButtons() {
