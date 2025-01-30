@@ -39,12 +39,20 @@
         .input-container {
             margin-bottom: 10px;
         }
+        .paste-area {
+            border: 1px dashed #ccc;
+            padding: 10px;
+            min-height: 50px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
 
 <div class="profile">
-    <input type="file" id="profile-image-input" accept="image/*" onchange="updateProfileImage()">
+    <div class="paste-area" contenteditable="true" onpaste="handlePaste(event)">
+        여기에 이미지를 붙여넣으세요 (Ctrl + V)
+    </div>
     <img id="profile-image" src="profile.jpg" alt="프로필 사진">
     <div>
         <input type="text" id="name-input" placeholder="이름" oninput="updateName()">
@@ -53,11 +61,7 @@
 </div>
 
 <h3>카테고리 추가</h3>
-<div class="input-container">
-    <input type="text" id="category-input" placeholder="카테고리">
-    <input type="text" id="description-input" placeholder="설명">
-    <button onclick="addCategory()">추가</button>
-</div>
+<button onclick="addCategory()">추가</button>
 
 <table class="category-table">
     <tbody id="category-list"></tbody>
@@ -69,17 +73,28 @@
 <script>
     const categories = [];
 
-    function updateProfileImage() {
-        const fileInput = document.getElementById('profile-image-input');
-        const file = fileInput.files[0];
+    function updateProfileImage(src) {
         const profileImage = document.getElementById('profile-image');
+        profileImage.src = src;
+    }
 
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                profileImage.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
+    function handlePaste(event) {
+        event.preventDefault();
+        const items = event.clipboardData.items;
+
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+
+            if (item.type.startsWith('image/')) {
+                const file = item.getAsFile();
+                const reader = new FileReader();
+
+                reader.onload = function(event) {
+                    updateProfileImage(event.target.result);
+                };
+
+                reader.readAsDataURL(file);
+            }
         }
     }
 
@@ -96,25 +111,17 @@
     }
 
     function addCategory() {
-        const categoryInput = document.getElementById('category-input');
-        const descriptionInput = document.getElementById('description-input');
         const categoryList = document.getElementById('category-list');
 
         const row = document.createElement('tr');
         row.innerHTML = `
             <td class="arrow" onclick="moveUp(this)">↑</td>
             <td class="arrow" onclick="moveDown(this)">↓</td>
-            <td><input type="text" value="${categoryInput.value}" oninput="updateCategory(this)"></td>
-            <td><input type="text" value="${descriptionInput.value}" oninput="updateDescription(this)"></td>
+            <td><input type="text" placeholder="카테고리" oninput="updateCategory(this)"></td>
+            <td><input type="text" placeholder="설명" oninput="updateDescription(this)"></td>
             <td class="delete" onclick="removeCategory(this)">✖</td>
         `;
         categoryList.appendChild(row);
-
-        categories.push({ category: categoryInput.value, description: descriptionInput.value });
-
-        // 입력란 초기화
-        document.getElementById('category-input').value = '';
-        document.getElementById('description-input').value = '';
     }
 
     function moveUp(element) {
