@@ -42,19 +42,14 @@
             cursor: pointer;
             color: red;
         }
-        .paste-area {
-            border: 1px dashed #ccc;
-            padding: 10px;
-            min-height: 50px;
-            margin-top: 10px;
-        }
         input[type="text"], textarea {
             width: 100%;
             box-sizing: border-box; /* 패딩을 포함한 너비 계산을 위해 */
-            resize: vertical; /* 세로 방향으로 크기 조절 가능 */
+            resize: none; /* 사용자가 크기 조정 불가 */
         }
         textarea {
             min-height: 50px; /* 최소 높이 설정 */
+            overflow: hidden; /* 스크롤바 숨기기 */
         }
     </style>
 </head>
@@ -66,15 +61,12 @@
         <input type="file" id="profile-image-input" accept="image/*" onchange="updateProfileImage()" style="display: none;">
         <div class="file-buttons" id="file-buttons">
             <button onclick="document.getElementById('profile-image-input').click()">파일 선택</button>
-            <button onclick="document.execCommand('paste')">붙여넣기</button>
-        </div>
-        <div class="paste-area" contenteditable="true" onpaste="handlePaste(event)">
-            여기에 이미지를 붙여넣으세요 (Ctrl + V)
+            <button onclick="pasteImage()">붙여넣기</button>
         </div>
     </div>
     <div>
         <input type="text" id="name-input" placeholder="이름" oninput="updateName()">
-        <textarea id="introduction-input" placeholder="간단한 소개" oninput="updateIntroduction()"></textarea>
+        <textarea id="introduction-input" placeholder="간단한 소개" oninput="updateIntroduction()" oninput="adjustHeight(this)"></textarea>
     </div>
 </div>
 
@@ -97,24 +89,19 @@
         document.getElementById('file-buttons').style.display = 'block'; // 파일 버튼 보이기
     }
 
-    function handlePaste(event) {
-        event.preventDefault();
-        const items = event.clipboardData.items;
-
-        for (let i = 0; i < items.length; i++) {
-            const item = items[i];
-
-            if (item.type.startsWith('image/')) {
-                const file = item.getAsFile();
-                const reader = new FileReader();
-
-                reader.onload = function(event) {
-                    updateProfileImage(event.target.result);
-                };
-
-                reader.readAsDataURL(file);
+    function pasteImage() {
+        navigator.clipboard.read().then(data => {
+            for (const item of data) {
+                const blob = item.getType('image/png');
+                if (blob) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        updateProfileImage(event.target.result);
+                    };
+                    blob.then(b => reader.readAsDataURL(b));
+                }
             }
-        }
+        });
     }
 
     function showFileButtons() {
