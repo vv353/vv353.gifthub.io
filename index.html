@@ -14,8 +14,7 @@
         }
         .profile {
             display: flex;
-            flex-direction: column; /* 세로 방향으로 배치 */
-            align-items: center;
+            align-items: flex-start; /* 위쪽 정렬 */
             margin-bottom: 20px;
         }
         .plus-icon {
@@ -30,21 +29,28 @@
             text-align: center;
             cursor: pointer;
             position: relative; /* 위치 조정 */
+            margin-right: 20px; /* 프로필 사진과 이름 간격 */
         }
         .file-options {
             display: none; /* 기본적으로 숨김 */
             margin-top: 10px; /* 버튼과의 간격 */
         }
         .profile-info {
-            margin-top: 10px; /* 프로필 사진과 이름, 소개 간격 */
-            text-align: center; /* 중앙 정렬 */
+            display: flex;
+            flex-direction: column; /* 세로 방향으로 배치 */
+            text-align: left; /* 왼쪽 정렬 */
         }
-        .profile-info h2 {
+        .profile-info input[type="text"] {
             font-size: 24px; /* 이름 크기 */
-            margin: 0; /* 기본 margin 제거 */
+            width: 300px; /* 고정된 너비 */
+            height: 40px; /* 고정된 높이 */
+            margin-bottom: 10px; /* 아래 여백 */
         }
-        .profile-info p {
-            margin: 0; /* 기본 margin 제거 */
+        .profile-info textarea {
+            font-size: 16px; /* 짧은 소개 크기 (카테고리와 동일) */
+            width: 300px; /* 고정된 너비 */
+            resize: vertical; /* 세로로만 크기 조절 가능 */
+            overflow: auto; /* 내용이 넘칠 경우 스크롤 */
         }
         .category-table {
             width: 100%;
@@ -75,15 +81,6 @@
             margin-left: auto; /* 오른쪽 정렬 */
             cursor: pointer;
         }
-        textarea {
-            width: 100%;
-            resize: vertical; /* 세로로만 크기 조절 가능 */
-            overflow: auto; /* 내용이 넘칠 경우 스크롤 */
-        }
-        input[type="text"] {
-            width: 100%;
-            height: 40px; /* 고정된 높이 */
-        }
         .move-button {
             cursor: pointer;
             margin: 0 5px; /* 여백 조정 */
@@ -94,17 +91,15 @@
 
     <div class="profile">
         <div class="plus-icon" onclick="showFileOptions()">+</div>
-        <div class="file-options" id="fileOptions">
-            <input type="file" id="fileInput" accept="image/*" onchange="updateProfilePic()">
-            <button id="pasteButton" onclick="pasteImage()">붙여넣기</button>
-        </div>
         <div class="profile-info">
-            <input type="text" id="nameInput" placeholder="이름" oninput="updateName()">
-            <br>
-            <textarea id="bioInput" placeholder="짧은 소개" rows="2" oninput="updateBio()"></textarea>
-            <h2 id="nameDisplay">이름</h2>
-            <p id="bioDisplay">짧은 소개</p>
+            <input type="text" id="nameInput" placeholder="이름">
+            <textarea id="bioInput" placeholder="짧은 소개" rows="2"></textarea>
         </div>
+    </div>
+
+    <div class="file-options" id="fileOptions">
+        <input type="file" id="fileInput" accept="image/*" onchange="updateProfilePic()">
+        <button id="pasteButton" onclick="pasteImage()">붙여넣기</button>
     </div>
 
     <table class="category-table">
@@ -161,16 +156,6 @@
             });
         }
 
-        function updateName() {
-            const nameInput = document.getElementById('nameInput').value;
-            document.getElementById('nameDisplay').textContent = nameInput || '이름';
-        }
-
-        function updateBio() {
-            const bioInput = document.getElementById('bioInput').value;
-            document.getElementById('bioDisplay').textContent = bioInput || '짧은 소개';
-        }
-
         function addCategory() {
             const categoryList = document.getElementById('categoryList');
             const row = document.createElement('tr');
@@ -205,8 +190,8 @@
         }
 
         function saveAndShare() {
-            const name = document.getElementById('nameDisplay').textContent;
-            const bio = document.getElementById('bioDisplay').textContent;
+            const name = document.getElementById('nameInput').value;
+            const bio = document.getElementById('bioInput').value;
             const categories = Array.from(document.querySelectorAll('#categoryList textarea')).map(textarea => textarea.value).join('|');
 
             const shareData = {
