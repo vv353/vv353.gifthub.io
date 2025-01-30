@@ -21,6 +21,13 @@
             margin-right: 20px;
             cursor: pointer; /* 클릭할 수 있도록 커서 변경 */
         }
+        .plus-icon {
+            font-size: 40px;
+            text-align: center;
+            cursor: pointer;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
         .hidden {
             display: none;
         }
@@ -33,12 +40,20 @@
             padding: 10px;
             text-align: left;
         }
-        .add-category {
-            margin-top: 10px;
-            cursor: pointer;
+        .category-table .delete {
+            text-align: center; /* X 버튼 중앙 정렬 */
         }
-        .delete {
-            color: red;
+        .button-container {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .add-category {
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .save-button {
+            margin-left: 10px;
             cursor: pointer;
         }
         textarea {
@@ -50,25 +65,17 @@
             width: 100%;
             height: 40px; /* 고정된 높이 */
         }
-        .button-container {
-            display: flex;
-            align-items: center;
-        }
-        .save-button {
-            margin-left: 10px;
-            cursor: pointer;
-        }
-        .file-button {
-            display: none;
-        }
     </style>
 </head>
 <body>
 
     <div class="profile">
-        <img id="profilePic" src="https://via.placeholder.com/100" alt="프로필 사진" onclick="toggleFileInput()">
-        <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="updateProfilePic()">
-        <button id="pasteButton" class="file-button" onclick="pasteImage()">붙여넣기</button>
+        <img id="profilePic" src="https://via.placeholder.com/100" alt="프로필 사진">
+        <span class="plus-icon" onclick="showFileOptions()">+</span>
+        <div id="fileOptions" class="hidden">
+            <input type="file" id="fileInput" accept="image/*" onchange="updateProfilePic()">
+            <button id="pasteButton" onclick="pasteImage()">붙여넣기</button>
+        </div>
         <div>
             <input type="text" id="name" placeholder="이름">
             <br>
@@ -86,11 +93,9 @@
     </div>
 
     <script>
-        function toggleFileInput() {
-            const fileInput = document.getElementById('fileInput');
-            const pasteButton = document.getElementById('pasteButton');
-            fileInput.click();
-            pasteButton.style.display = 'inline'; // 붙여넣기 버튼 보이기
+        function showFileOptions() {
+            const fileOptions = document.getElementById('fileOptions');
+            fileOptions.classList.toggle('hidden'); // 파일 선택 및 붙여넣기 버튼 표시/숨기기
         }
 
         function updateProfilePic() {
@@ -133,7 +138,7 @@
             row.innerHTML = `
                 <td><textarea placeholder="카테고리" rows="2"></textarea></td>
                 <td><textarea placeholder="설명" rows="2" oninput="this.rows = Math.min(this.value.split('\n').length, 5);"></textarea></td>
-                <td><span class="delete" onclick="deleteCategory(this)">x</span></td>
+                <td class="delete"><span onclick="deleteCategory(this)">x</span></td>
             `;
             categoryList.appendChild(row);
         }
