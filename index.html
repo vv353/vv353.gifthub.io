@@ -116,6 +116,21 @@
     </div>
 
     <script>
+        // 페이지가 로드될 때 URL에서 데이터 불러오기
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const data = urlParams.get('data');
+            if (data) {
+                const profileData = JSON.parse(decodeURIComponent(data));
+                document.getElementById('nameInput').value = profileData.name;
+                document.getElementById('bioInput').value = profileData.bio;
+                const categories = profileData.categories.split('|');
+                categories.forEach(category => {
+                    addCategoryWithValue(category);
+                });
+            }
+        };
+
         function showFileOptions() {
             const fileOptions = document.getElementById('fileOptions');
             fileOptions.classList.toggle('hidden'); // 파일 선택 및 붙여넣기 버튼 표시/숨기기
@@ -176,40 +191,14 @@
             categoryList.appendChild(row);
         }
 
-        function moveCategory(element, direction) {
-            const row = element.closest('tr');
-            const sibling = direction === 'up' ? row.previousElementSibling : row.nextElementSibling;
-            if (sibling) {
-                if (direction === 'up') {
-                    row.parentNode.insertBefore(row, sibling);
-                } else {
-                    row.parentNode.insertBefore(sibling, row);
-                }
-            }
-        }
+        function addCategoryWithValue(categoryData) {
+            const categoryList = document.getElementById('categoryList');
+            const row = document.createElement('tr');
 
-        function deleteCategory(element) {
-            const row = element.parentElement;
-            row.parentElement.removeChild(row);
-        }
-
-        function saveAndShare() {
-            const name = document.getElementById('nameInput').value;
-            const bio = document.getElementById('bioInput').value;
-            const categories = Array.from(document.querySelectorAll('#categoryList textarea')).map(textarea => textarea.value).join('|');
-
-            const shareData = {
-                name: name,
-                bio: bio,
-                categories: categories
-            };
-
-            const encodedData = encodeURIComponent(JSON.stringify(shareData));
-            const link = `${window.location.origin}/view?data=${encodedData}`;
-
-            alert(`링크가 생성되었습니다: ${link}`);
-        }
-    </script>
-
-</body>
-</html>
+            row.innerHTML = `
+                <td class="move-button">
+                    <span onclick="moveCategory(this, 'up')"><i class="fas fa-chevron-up"></i></span>
+                    <span onclick="moveCategory(this, 'down')"><i class="fas fa-chevron-down"></i></span>
+                </td>
+                <td><textarea placeholder="카테고리" rows="2" style="width: 100%; resize: vertical;">${categoryData}</textarea></td>
+                <td><textarea placeholder="설명" rows="2" style="
