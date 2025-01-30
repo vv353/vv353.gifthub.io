@@ -19,6 +19,7 @@
             width: 100px;
             height: 100px;
             margin-right: 20px;
+            cursor: pointer; /* 클릭할 수 있도록 커서 변경 */
         }
         .category-table {
             width: 100%;
@@ -31,12 +32,10 @@
         }
         .add-category {
             margin-top: 10px;
+            cursor: pointer;
         }
         .move {
             cursor: pointer;
-        }
-        .move:hover {
-            color: blue;
         }
         .delete {
             color: red;
@@ -49,16 +48,20 @@
         }
         input[type="text"] {
             width: 100%;
+            height: 40px; /* 고정된 높이 */
+        }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
 
     <div class="profile">
-        <img id="profilePic" src="https://via.placeholder.com/100" alt="프로필 사진">
+        <img id="profilePic" src="https://via.placeholder.com/100" alt="프로필 사진" onclick="document.getElementById('fileInput').click();">
+        <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="updateProfilePic()">
+        <button onclick="pasteImage()">붙여넣기</button>
         <div>
-            <input type="file" id="fileInput" accept="image/*" onchange="updateProfilePic()">
-            <br>
             <input type="text" id="name" placeholder="이름">
             <br>
             <textarea id="bio" placeholder="간단한 소개" rows="2"></textarea>
@@ -66,18 +69,10 @@
     </div>
 
     <table class="category-table">
-        <thead>
-            <tr>
-                <th>이동</th>
-                <th>카테고리</th>
-                <th>설명</th>
-                <th>삭제</th>
-            </tr>
-        </thead>
         <tbody id="categoryList"></tbody>
     </table>
 
-    <button class="add-category" onclick="addCategory()">카테고리 추가</button>
+    <button class="add-category" onclick="addCategory()">+</button>
 
     <script>
         function updateProfilePic() {
@@ -96,6 +91,23 @@
             }
         }
 
+        function pasteImage() {
+            navigator.clipboard.read().then(function(items) {
+                for (const item of items) {
+                    if (item.types.includes('image/png')) {
+                        const blob = item.getType('image/png');
+                        const reader = new FileReader();
+                        reader.onloadend = function() {
+                            document.getElementById('profilePic').src = reader.result;
+                        }
+                        blob.then(function(b) {
+                            reader.readAsDataURL(b);
+                        });
+                    }
+                }
+            });
+        }
+
         function addCategory() {
             const categoryList = document.getElementById('categoryList');
             const row = document.createElement('tr');
@@ -105,7 +117,7 @@
                     <span class="move" onclick="moveUp(this)">↑</span>
                     <span class="move" onclick="moveDown(this)">↓</span>
                 </td>
-                <td><input type="text" placeholder="카테고리"></td>
+                <td><textarea placeholder="카테고리" rows="2"></textarea></td>
                 <td><textarea placeholder="설명" rows="2" oninput="this.rows = Math.min(this.value.split('\n').length, 5);"></textarea></td>
                 <td><span class="delete" onclick="deleteCategory(this)">x</span></td>
             `;
