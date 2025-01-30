@@ -45,6 +45,14 @@
             min-height: 50px;
             margin-bottom: 10px;
         }
+        input[type="text"], textarea {
+            width: 100%;
+            box-sizing: border-box; /* 패딩을 포함한 너비 계산을 위해 */
+            resize: vertical; /* 세로 방향으로 크기 조절 가능 */
+        }
+        textarea {
+            min-height: 50px; /* 최소 높이 설정 */
+        }
     </style>
 </head>
 <body>
@@ -118,7 +126,7 @@
             <td class="arrow" onclick="moveUp(this)">↑</td>
             <td class="arrow" onclick="moveDown(this)">↓</td>
             <td><input type="text" placeholder="카테고리" oninput="updateCategory(this)"></td>
-            <td><input type="text" placeholder="설명" oninput="updateDescription(this)"></td>
+            <td><textarea placeholder="설명" oninput="updateDescription(this)"></textarea></td>
             <td class="delete" onclick="removeCategory(this)">✖</td>
         `;
         categoryList.appendChild(row);
@@ -191,7 +199,7 @@
                     <td class="arrow" onclick="moveUp(this)">↑</td>
                     <td class="arrow" onclick="moveDown(this)">↓</td>
                     <td><input type="text" value="${category.category}" oninput="updateCategory(this)"></td>
-                    <td><input type="text" value="${category.description}" oninput="updateDescription(this)"></td>
+                    <td><textarea oninput="updateDescription(this)">${category.description}</textarea></td>
                     <td class="delete" onclick="removeCategory(this)">✖</td>
                 `;
                 document.getElementById('category-list').appendChild(row);
