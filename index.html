@@ -42,6 +42,14 @@
             color: red;
             cursor: pointer;
         }
+        textarea {
+            width: 100%;
+            resize: vertical; /* 세로로만 크기 조절 가능 */
+            overflow: auto; /* 내용이 넘칠 경우 스크롤 */
+        }
+        input[type="text"] {
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -51,9 +59,9 @@
         <div>
             <input type="file" id="fileInput" accept="image/*" onchange="updateProfilePic()">
             <br>
-            <input type="text" id="name" placeholder="이름" style="width: 200px;">
+            <input type="text" id="name" placeholder="이름">
             <br>
-            <textarea id="bio" placeholder="간단한 소개" rows="3" style="width: 200px;"></textarea>
+            <textarea id="bio" placeholder="간단한 소개" rows="3"></textarea>
         </div>
     </div>
 
@@ -97,8 +105,8 @@
                     <span class="move" onclick="moveUp(this)">↑</span>
                     <span class="move" onclick="moveDown(this)">↓</span>
                 </td>
-                <td><input type="text" placeholder="카테고리" style="width: 100%;"></td>
-                <td><textarea placeholder="설명" rows="1" style="width: 100%;" oninput="this.rows = Math.min(this.value.split('\n').length, 5);"></textarea></td>
+                <td><input type="text" placeholder="카테고리"></td>
+                <td><textarea placeholder="설명" rows="1" oninput="this.rows = Math.min(this.value.split('\n').length, 5);"></textarea></td>
                 <td><span class="delete" onclick="deleteCategory(this)">x</span></td>
             `;
             categoryList.appendChild(row);
