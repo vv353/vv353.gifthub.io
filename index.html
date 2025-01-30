@@ -54,7 +54,6 @@
         }
         .category-table {
             width: 100%; /* 전체 너비 100% */
-            max-width: 600px; /* 최대 너비 */
             border-collapse: collapse;
             margin-top: 20px; /* 카테고리 테이블과 프로필 간의 간격 */
         }
@@ -161,13 +160,16 @@
             const categoryList = document.getElementById('categoryList');
             const row = document.createElement('tr');
 
+            const tableWidth = document.querySelector('.category-table').offsetWidth;
+            const textareaWidth = (tableWidth - 100) / 2; // 화살표와 삭제 버튼을 제외한 너비
+
             row.innerHTML = `
                 <td style="text-align: center;">
                     <span class="move-button" onclick="moveCategory(this, 'up')">↑</span>
                     <span class="move-button" onclick="moveCategory(this, 'down')">↓</span>
                 </td>
-                <td><textarea placeholder="카테고리" rows="2" style="width: 150px; resize: vertical;"></textarea></td>
-                <td><textarea placeholder="설명" rows="2" style="width: 150px; resize: vertical;" oninput="this.rows = Math.min(this.value.split('\n').length, 5);"></textarea></td>
+                <td><textarea placeholder="카테고리" rows="2" style="width: ${textareaWidth}px; resize: vertical;"></textarea></td>
+                <td><textarea placeholder="설명" rows="2" style="width: ${textareaWidth}px; resize: vertical;" oninput="this.rows = Math.min(this.value.split('\n').length, 5);"></textarea></td>
                 <td class="delete" onclick="deleteCategory(this)">x</td>
             `;
             categoryList.appendChild(row);
