@@ -21,20 +21,20 @@
             margin-right: 20px;
             cursor: pointer; /* 클릭할 수 있도록 커서 변경 */
         }
+        .hidden {
+            display: none;
+        }
         .category-table {
             width: 100%;
             border-collapse: collapse;
         }
-        .category-table th, .category-table td {
+        .category-table td {
             border: 1px solid #ccc;
             padding: 10px;
             text-align: left;
         }
         .add-category {
             margin-top: 10px;
-            cursor: pointer;
-        }
-        .move {
             cursor: pointer;
         }
         .delete {
@@ -50,7 +50,15 @@
             width: 100%;
             height: 40px; /* 고정된 높이 */
         }
-        .hidden {
+        .button-container {
+            display: flex;
+            align-items: center;
+        }
+        .save-button {
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .file-button {
             display: none;
         }
     </style>
@@ -58,9 +66,9 @@
 <body>
 
     <div class="profile">
-        <img id="profilePic" src="https://via.placeholder.com/100" alt="프로필 사진" onclick="document.getElementById('fileInput').click();">
+        <img id="profilePic" src="https://via.placeholder.com/100" alt="프로필 사진" onclick="toggleFileInput()">
         <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="updateProfilePic()">
-        <button onclick="pasteImage()">붙여넣기</button>
+        <button id="pasteButton" class="file-button" onclick="pasteImage()">붙여넣기</button>
         <div>
             <input type="text" id="name" placeholder="이름">
             <br>
@@ -72,9 +80,19 @@
         <tbody id="categoryList"></tbody>
     </table>
 
-    <button class="add-category" onclick="addCategory()">+</button>
+    <div class="button-container">
+        <button class="add-category" onclick="addCategory()">+</button>
+        <button class="save-button" onclick="saveAndShare()">저장 및 공유하기</button>
+    </div>
 
     <script>
+        function toggleFileInput() {
+            const fileInput = document.getElementById('fileInput');
+            const pasteButton = document.getElementById('pasteButton');
+            fileInput.click();
+            pasteButton.style.display = 'inline'; // 붙여넣기 버튼 보이기
+        }
+
         function updateProfilePic() {
             const fileInput = document.getElementById('fileInput');
             const profilePic = document.getElementById('profilePic');
@@ -113,10 +131,6 @@
             const row = document.createElement('tr');
 
             row.innerHTML = `
-                <td>
-                    <span class="move" onclick="moveUp(this)">↑</span>
-                    <span class="move" onclick="moveDown(this)">↓</span>
-                </td>
                 <td><textarea placeholder="카테고리" rows="2"></textarea></td>
                 <td><textarea placeholder="설명" rows="2" oninput="this.rows = Math.min(this.value.split('\n').length, 5);"></textarea></td>
                 <td><span class="delete" onclick="deleteCategory(this)">x</span></td>
@@ -129,18 +143,21 @@
             row.parentElement.removeChild(row);
         }
 
-        function moveUp(element) {
-            const row = element.parentElement.parentElement;
-            if (row.previousElementSibling) {
-                row.parentElement.insertBefore(row, row.previousElementSibling);
-            }
-        }
+        function saveAndShare() {
+            const name = document.getElementById('name').value;
+            const bio = document.getElementById('bio').value;
+            const categories = Array.from(document.querySelectorAll('#categoryList textarea')).map(textarea => textarea.value).join('|');
 
-        function moveDown(element) {
-            const row = element.parentElement.parentElement;
-            if (row.nextElementSibling) {
-                row.parentElement.insertBefore(row.nextElementSibling, row);
-            }
+            const shareData = {
+                name: name,
+                bio: bio,
+                categories: categories
+            };
+
+            const encodedData = encodeURIComponent(JSON.stringify(shareData));
+            const link = `${window.location.origin}/view?data=${encodedData}`;
+
+            alert(`링크가 생성되었습니다: ${link}`);
         }
     </script>
 
