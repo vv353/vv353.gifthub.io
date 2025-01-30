@@ -61,7 +61,7 @@
             <br>
             <input type="text" id="name" placeholder="이름">
             <br>
-            <textarea id="bio" placeholder="간단한 소개" rows="3"></textarea>
+            <textarea id="bio" placeholder="간단한 소개" rows="2"></textarea>
         </div>
     </div>
 
@@ -106,7 +106,7 @@
                     <span class="move" onclick="moveDown(this)">↓</span>
                 </td>
                 <td><input type="text" placeholder="카테고리"></td>
-                <td><textarea placeholder="설명" rows="1" oninput="this.rows = Math.min(this.value.split('\n').length, 5);"></textarea></td>
+                <td><textarea placeholder="설명" rows="2" oninput="this.rows = Math.min(this.value.split('\n').length, 5);"></textarea></td>
                 <td><span class="delete" onclick="deleteCategory(this)">x</span></td>
             `;
             categoryList.appendChild(row);
