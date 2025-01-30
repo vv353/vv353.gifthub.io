@@ -19,189 +19,110 @@
             width: 100px;
             height: 100px;
             margin-right: 20px;
-            cursor: pointer;
-        }
-        .file-buttons {
-            display: none;
-            margin-top: 10px;
         }
         .category-table {
             width: 100%;
             border-collapse: collapse;
         }
-        .category-table td {
+        .category-table th, .category-table td {
             border: 1px solid #ccc;
             padding: 10px;
             text-align: left;
-            vertical-align: top; /* 입력란이 늘어날 때 위쪽 정렬 */
         }
-        .arrow {
+        .add-category {
+            margin-top: 10px;
+        }
+        .move {
             cursor: pointer;
+        }
+        .move:hover {
+            color: blue;
         }
         .delete {
-            cursor: pointer;
             color: red;
-        }
-        input[type="text"], textarea {
-            width: 100%;
-            box-sizing: border-box; /* 패딩을 포함한 너비 계산을 위해 */
-            resize: none; /* 사용자가 크기 조정 불가 */
-        }
-        textarea {
-            min-height: 50px; /* 최소 높이 설정 */
-            overflow: hidden; /* 스크롤바 숨기기 */
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-<div class="profile">
-    <img id="profile-image" src="profile.jpg" alt="프로필 사진" onclick="showFileButtons()">
-    <div>
-        <input type="file" id="profile-image-input" accept="image/*" onchange="updateProfileImage()" style="display: none;">
-        <div class="file-buttons" id="file-buttons">
-            <button onclick="document.getElementById('profile-image-input').click()">파일 선택</button>
-            <button onclick="document.execCommand('paste')">붙여넣기</button>
+    <div class="profile">
+        <img id="profilePic" src="https://via.placeholder.com/100" alt="프로필 사진">
+        <div>
+            <input type="file" id="fileInput" accept="image/*" onchange="updateProfilePic()">
+            <br>
+            <input type="text" id="name" placeholder="이름" style="width: 200px;">
+            <br>
+            <textarea id="bio" placeholder="간단한 소개" rows="3" style="width: 200px;"></textarea>
         </div>
     </div>
-    <div>
-        <input type="text" id="name-input" placeholder="이름" oninput="updateName()">
-        <textarea id="introduction-input" placeholder="간단한 소개" oninput="updateIntroduction()" oninput="adjustHeight(this)"></textarea>
-    </div>
-</div>
 
-<h3>카테고리 추가</h3>
-<button onclick="addCategory()">추가</button>
+    <table class="category-table">
+        <thead>
+            <tr>
+                <th>이동</th>
+                <th>카테고리</th>
+                <th>설명</th>
+                <th>삭제</th>
+            </tr>
+        </thead>
+        <tbody id="categoryList"></tbody>
+    </table>
 
-<table class="category-table">
-    <tbody id="category-list"></tbody>
-</table>
+    <button class="add-category" onclick="addCategory()">카테고리 추가</button>
 
-<button onclick="generateLink()">링크 생성 및 공유</button>
-<p id="share-link"></p>
+    <script>
+        function updateProfilePic() {
+            const fileInput = document.getElementById('fileInput');
+            const profilePic = document.getElementById('profilePic');
 
-<script>
-    const categories = [];
+            const file = fileInput.files[0];
+            const reader = new FileReader();
 
-    function updateProfileImage(src) {
-        const profileImage = document.getElementById('profile-image');
-        profileImage.src = src;
-        document.getElementById('file-buttons').style.display = 'block'; // 파일 버튼 보이기
-    }
+            reader.onloadend = function() {
+                profilePic.src = reader.result;
+            }
 
-    function showFileButtons() {
-        document.getElementById('file-buttons').style.display = 'block'; // 파일 버튼 보이기
-    }
-
-    function updateName() {
-        const nameInput = document.getElementById('name-input');
-        const name = nameInput.value;
-        document.getElementById('name-display').innerText = name;
-    }
-
-    function updateIntroduction() {
-        const introductionInput = document.getElementById('introduction-input');
-        const introduction = introductionInput.value;
-        document.getElementById('introduction-display').innerText = introduction;
-    }
-
-    function addCategory() {
-        const categoryList = document.getElementById('category-list');
-
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td class="arrow" onclick="moveUp(this)">↑</td>
-            <td class="arrow" onclick="moveDown(this)">↓</td>
-            <td><input type="text" placeholder="카테고리" oninput="updateCategory(this)"></td>
-            <td><textarea placeholder="설명" oninput="updateDescription(this)" oninput="adjustHeight(this)"></textarea></td>
-            <td class="delete" onclick="removeCategory(this)">✖</td>
-        `;
-        categoryList.appendChild(row);
-    }
-
-    function adjustHeight(textarea) {
-        textarea.style.height = 'auto'; // 초기화하여 높이를 조정
-        textarea.style.height = textarea.scrollHeight + 'px'; // 내용에 맞게 높이 조정
-    }
-
-    function moveUp(element) {
-        const row = element.parentElement;
-        const previousRow = row.previousElementSibling;
-        if (previousRow) {
-            row.parentElement.insertBefore(row, previousRow);
+            if (file) {
+                reader.readAsDataURL(file);
+            }
         }
-    }
 
-    function moveDown(element) {
-        const row = element.parentElement;
-        const nextRow = row.nextElementSibling;
-        if (nextRow) {
-            row.parentElement.insertBefore(nextRow, row);
+        function addCategory() {
+            const categoryList = document.getElementById('categoryList');
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>
+                    <span class="move" onclick="moveUp(this)">↑</span>
+                    <span class="move" onclick="moveDown(this)">↓</span>
+                </td>
+                <td><input type="text" placeholder="카테고리" style="width: 100%;"></td>
+                <td><textarea placeholder="설명" rows="1" style="width: 100%;" oninput="this.rows = Math.min(this.value.split('\n').length, 5);"></textarea></td>
+                <td><span class="delete" onclick="deleteCategory(this)">x</span></td>
+            `;
+            categoryList.appendChild(row);
         }
-    }
 
-    function removeCategory(element) {
-        const row = element.parentElement;
-        const index = Array.from(row.parentNode.children).indexOf(row);
-        categories.splice(index, 1);
-        row.remove();
-    }
-
-    function updateCategory(input) {
-        const index = Array.from(input.parentNode.parentNode.children).indexOf(input.parentNode.parentNode);
-        categories[index].category = input.value;
-    }
-
-    function updateDescription(input) {
-        const index = Array.from(input.parentNode.parentNode.children).indexOf(input.parentNode.parentNode);
-        categories[index].description = input.value;
-    }
-
-    function generateLink() {
-        const name = document.getElementById('name-input').value;
-        const introduction = document.getElementById('introduction-input').value;
-        const profileImage = document.getElementById('profile-image').src;
-
-        const data = {
-            name,
-            introduction,
-            profileImage,
-            categories
-        };
-
-        const jsonData = encodeURIComponent(JSON.stringify(data));
-        const link = `${window.location.origin}/?data=${jsonData}`;
-
-        document.getElementById('share-link').innerHTML = `<a href="${link}" target="_blank">링크 복사</a>`;
-    }
-
-    function loadSharedData() {
-        const params = new URLSearchParams(window.location.search);
-        const data = params.get('data');
-
-        if (data) {
-            const parsedData = JSON.parse(decodeURIComponent(data));
-            document.getElementById('name-input').value = parsedData.name;
-            document.getElementById('introduction-input').value = parsedData.introduction;
-            document.getElementById('profile-image').src = parsedData.profileImage;
-
-            parsedData.categories.forEach(category => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="arrow" onclick="moveUp(this)">↑</td>
-                    <td class="arrow" onclick="moveDown(this)">↓</td>
-                    <td><input type="text" value="${category.category}" oninput="updateCategory(this)"></td>
-                    <td><textarea oninput="updateDescription(this)" oninput="adjustHeight(this)">${category.description}</textarea></td>
-                    <td class="delete" onclick="removeCategory(this)">✖</td>
-                `;
-                document.getElementById('category-list').appendChild(row);
-            });
+        function deleteCategory(element) {
+            const row = element.parentElement.parentElement;
+            row.parentElement.removeChild(row);
         }
-    }
 
-    window.onload = loadSharedData;
+        function moveUp(element) {
+            const row = element.parentElement.parentElement;
+            if (row.previousElementSibling) {
+                row.parentElement.insertBefore(row, row.previousElementSibling);
+            }
+        }
 
-</script>
+        function moveDown(element) {
+            const row = element.parentElement.parentElement;
+            if (row.nextElementSibling) {
+                row.parentElement.insertBefore(row.nextElementSibling, row);
+            }
+        }
+    </script>
 
 </body>
 </html>
