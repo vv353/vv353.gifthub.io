@@ -11,11 +11,11 @@
             margin: 20px;
             display: flex;
             flex-direction: column;
-            align-items: center; /* 전체 내용을 가운데 정렬 */
+            align-items: center;
         }
         .profile {
             display: flex;
-            align-items: flex-start; /* 위쪽 정렬 */
+            align-items: flex-start;
             margin-bottom: 20px;
         }
         .plus-icon {
@@ -29,65 +29,68 @@
             font-size: 40px;
             text-align: center;
             cursor: pointer;
-            position: relative; /* 위치 조정 */
-            margin-right: 20px; /* 프로필 사진과 이름 간격 */
+            position: relative;
+            margin-right: 20px;
         }
         .file-options {
-            display: none; /* 기본적으로 숨김 */
-            margin-top: 10px; /* 버튼과의 간격 */
+            display: none;
+            margin-top: 10px;
         }
         .profile-info {
             display: flex;
-            flex-direction: column; /* 세로 방향으로 배치 */
-            text-align: left; /* 왼쪽 정렬 */
+            flex-direction: column;
+            text-align: left;
         }
         .profile-info input[type="text"] {
-            font-size: 24px; /* 이름 크기 */
-            width: 300px; /* 고정된 너비 */
-            height: 40px; /* 고정된 높이 */
-            margin-bottom: 10px; /* 아래 여백 */
+            font-size: 24px;
+            width: 300px;
+            height: 40px;
+            margin-bottom: 10px;
         }
         .profile-info textarea {
-            font-size: 16px; /* 짧은 소개 크기 (카테고리와 동일) */
-            width: 100%; /* 고정된 너비 */
-            resize: vertical; /* 세로로만 크기 조절 가능 */
-            overflow: auto; /* 내용이 넘칠 경우 스크롤 */
+            font-size: 16px;
+            width: 100%;
+            resize: vertical;
+            overflow: auto;
         }
         .category-table {
-            width: 100%; /* 전체 너비 100% */
+            width: 100%;
             border-collapse: collapse;
-            margin-top: 20px; /* 카테고리 테이블과 프로필 간의 간격 */
+            margin-top: 20px;
         }
         .category-table td {
             border: 1px solid #ccc;
             padding: 10px;
-            text-align: center; /* 가운데 정렬 */
+            text-align: center;
         }
         .category-table .delete {
-            text-align: center; /* 삭제 버튼 중앙 정렬 */
-            color: red; /* 버튼 빨간색 */
-            cursor: pointer; /* 클릭할 수 있도록 커서 변경 */
+            text-align: center;
+            color: red;
+            cursor: pointer;
         }
         .button-container {
             display: flex;
-            justify-content: space-between; /* 좌우 정렬 */
-            width: 100%; /* 전체 너비 사용 */
+            justify-content: space-between;
+            width: 100%;
             margin-top: 10px;
         }
         .add-category {
             cursor: pointer;
-            margin-right: 10px; /* 여백 조정 */
+            margin-right: 10px;
         }
         .save-button {
-            margin-left: auto; /* 오른쪽 정렬 */
+            margin-left: auto;
             cursor: pointer;
         }
         .move-button {
             cursor: pointer;
-            margin: 0; /* 여백 조정 */
             display: flex;
-            flex-direction: column; /* 세로 방향으로 정렬 */
-            align-items: center; /* 가운데 정렬 */
+            flex-direction: column;
+            align-items: center;
+        }
+        #share-link {
+            margin-top: 20px;
+            font-size: 18px;
         }
     </style>
 </head>
@@ -112,29 +115,15 @@
 
     <div class="button-container">
         <button class="add-category" onclick="addCategory()">+</button>
-        <button class="save-button" onclick="saveAndShare()">저장 및 공유하기</button>
+        <button class="save-button" onclick="generateLink()">저장 및 공유하기</button>
     </div>
 
-    <script>
-        // 페이지가 로드될 때 URL에서 데이터 불러오기
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const data = urlParams.get('data');
-            if (data) {
-                const profileData = JSON.parse(decodeURIComponent(data));
-                document.getElementById('nameInput').value = profileData.name;
-                document.getElementById('bioInput').value = profileData.bio;
-                const categories = profileData.categories.split('|');
-                categories.forEach(category => {
-                    addCategoryWithValue(category);
-                });
-            }
-        };
+    <div id="share-link"></div>
 
+    <script>
         function showFileOptions() {
             const fileOptions = document.getElementById('fileOptions');
-            fileOptions.classList.toggle('hidden'); // 파일 선택 및 붙여넣기 버튼 표시/숨기기
-            fileOptions.style.display = fileOptions.style.display === 'none' ? 'block' : 'none'; // 토글 기능
+            fileOptions.style.display = fileOptions.style.display === 'none' ? 'block' : 'none';
         }
 
         function updateProfilePic() {
@@ -146,8 +135,8 @@
 
             reader.onloadend = function() {
                 plusIcon.style.backgroundImage = `url(${reader.result})`;
-                plusIcon.style.backgroundSize = 'cover'; // 이미지가 버튼을 가득 채우도록 설정
-                plusIcon.textContent = ''; // "+" 문구 제거
+                plusIcon.style.backgroundSize = 'cover';
+                plusIcon.textContent = '';
             }
 
             if (file) {
@@ -164,8 +153,8 @@
                         reader.onloadend = function() {
                             const plusIcon = document.querySelector('.plus-icon');
                             plusIcon.style.backgroundImage = `url(${reader.result})`;
-                            plusIcon.style.backgroundSize = 'cover'; // 이미지가 버튼을 가득 채우도록 설정
-                            plusIcon.textContent = ''; // "+" 문구 제거
+                            plusIcon.style.backgroundSize = 'cover';
+                            plusIcon.textContent = '';
                         }
                         blob.then(function(b) {
                             reader.readAsDataURL(b);
@@ -191,14 +180,43 @@
             categoryList.appendChild(row);
         }
 
-        function addCategoryWithValue(categoryData) {
-            const categoryList = document.getElementById('categoryList');
-            const row = document.createElement('tr');
+        function moveCategory(element, direction) {
+            const row = element.closest('tr');
+            const sibling = direction === 'up' ? row.previousElementSibling : row.nextElementSibling;
+            if (sibling) {
+                if (direction === 'up') {
+                    row.parentNode.insertBefore(row, sibling);
+                } else {
+                    row.parentNode.insertBefore(sibling, row);
+                }
+            }
+        }
 
-            row.innerHTML = `
-                <td class="move-button">
-                    <span onclick="moveCategory(this, 'up')"><i class="fas fa-chevron-up"></i></span>
-                    <span onclick="moveCategory(this, 'down')"><i class="fas fa-chevron-down"></i></span>
-                </td>
-                <td><textarea placeholder="카테고리" rows="2" style="width: 100%; resize: vertical;">${categoryData}</textarea></td>
-                <td><textarea placeholder="설명" rows="2" style="
+        function deleteCategory(element) {
+            const row = element.parentElement;
+            row.parentElement.removeChild(row);
+        }
+
+        function generateLink() {
+            const name = document.getElementById('nameInput').value;
+            const introduction = document.getElementById('bioInput').value;
+            const profileImage = document.querySelector('.plus-icon').style.backgroundImage.slice(5, -2);
+
+            const categories = Array.from(document.querySelectorAll('#categoryList textarea')).map(textarea => textarea.value).join('|');
+
+            const data = {
+                name,
+                introduction,
+                profileImage,
+                categories
+            };
+
+            const jsonData = encodeURIComponent(JSON.stringify(data));
+            const link = `${window.location.origin}/?data=${jsonData}`;
+
+            document.getElementById('share-link').innerHTML = `<a href="${link}" target="_blank">링크 복사</a>`;
+        }
+    </script>
+
+</body>
+</html>
