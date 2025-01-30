@@ -63,7 +63,12 @@
     <tbody id="category-list"></tbody>
 </table>
 
+<button onclick="generateLink()">링크 생성 및 공유</button>
+<p id="share-link"></p>
+
 <script>
+    const categories = [];
+
     function updateProfileImage() {
         const fileInput = document.getElementById('profile-image-input');
         const file = fileInput.files[0];
@@ -105,6 +110,8 @@
         `;
         categoryList.appendChild(row);
 
+        categories.push({ category: categoryInput.value, description: descriptionInput.value });
+
         // 입력란 초기화
         document.getElementById('category-input').value = '';
         document.getElementById('description-input').value = '';
@@ -128,16 +135,65 @@
 
     function removeCategory(element) {
         const row = element.parentElement;
+        const index = Array.from(row.parentNode.children).indexOf(row);
+        categories.splice(index, 1);
         row.remove();
     }
 
     function updateCategory(input) {
-        // 카테고리 업데이트 로직 (필요시 추가)
+        const index = Array.from(input.parentNode.parentNode.children).indexOf(input.parentNode.parentNode);
+        categories[index].category = input.value;
     }
 
     function updateDescription(input) {
-        // 설명 업데이트 로직 (필요시 추가)
+        const index = Array.from(input.parentNode.parentNode.children).indexOf(input.parentNode.parentNode);
+        categories[index].description = input.value;
     }
+
+    function generateLink() {
+        const name = document.getElementById('name-input').value;
+        const introduction = document.getElementById('introduction-input').value;
+        const profileImage = document.getElementById('profile-image').src;
+
+        const data = {
+            name,
+            introduction,
+            profileImage,
+            categories
+        };
+
+        const jsonData = encodeURIComponent(JSON.stringify(data));
+        const link = `${window.location.origin}/?data=${jsonData}`;
+
+        document.getElementById('share-link').innerHTML = `<a href="${link}" target="_blank">링크 복사</a>`;
+    }
+
+    function loadSharedData() {
+        const params = new URLSearchParams(window.location.search);
+        const data = params.get('data');
+
+        if (data) {
+            const parsedData = JSON.parse(decodeURIComponent(data));
+            document.getElementById('name-input').value = parsedData.name;
+            document.getElementById('introduction-input').value = parsedData.introduction;
+            document.getElementById('profile-image').src = parsedData.profileImage;
+
+            parsedData.categories.forEach(category => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="arrow" onclick="moveUp(this)">↑</td>
+                    <td class="arrow" onclick="moveDown(this)">↓</td>
+                    <td><input type="text" value="${category.category}" oninput="updateCategory(this)"></td>
+                    <td><input type="text" value="${category.description}" oninput="updateDescription(this)"></td>
+                    <td class="delete" onclick="removeCategory(this)">✖</td>
+                `;
+                document.getElementById('category-list').appendChild(row);
+            });
+        }
+    }
+
+    window.onload = loadSharedData;
+
 </script>
 
 </body>
