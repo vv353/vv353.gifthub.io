@@ -23,12 +23,7 @@
         }
         .file-buttons {
             display: none;
-            position: absolute;
-            margin-top: -70px; /* 이미지 위로 위치 조정 */
-            margin-left: 120px; /* 이미지 우측 위치 조정 */
-        }
-        .file-buttons button {
-            margin-right: 5px;
+            margin-top: 10px;
         }
         .category-table {
             width: 100%;
@@ -46,9 +41,6 @@
         .delete {
             cursor: pointer;
             color: red;
-        }
-        .input-container {
-            margin-bottom: 10px;
         }
         .paste-area {
             border: 1px dashed #ccc;
@@ -69,15 +61,15 @@
 <body>
 
 <div class="profile">
-    <div class="paste-area" contenteditable="true" onpaste="handlePaste(event)">
-        여기에 이미지를 붙여넣으세요 (Ctrl + V)
-    </div>
-    <div style="position: relative;">
-        <img id="profile-image" src="profile.jpg" alt="프로필 사진" onmouseover="showFileButtons()" onmouseout="hideFileButtons()" onclick="fileInput.click()">
+    <img id="profile-image" src="profile.jpg" alt="프로필 사진" onclick="fileInput.click()">
+    <div>
+        <input type="file" id="profile-image-input" accept="image/*" onchange="updateProfileImage()" style="display: none;">
         <div class="file-buttons" id="file-buttons">
-            <input type="file" id="profile-image-input" accept="image/*" onchange="updateProfileImage()">
-            <button onclick="fileInput.click()">파일 선택</button>
+            <button onclick="document.getElementById('profile-image-input').click()">파일 선택</button>
             <button onclick="document.execCommand('paste')">붙여넣기</button>
+        </div>
+        <div class="paste-area" contenteditable="true" onpaste="handlePaste(event)">
+            여기에 이미지를 붙여넣으세요 (Ctrl + V)
         </div>
     </div>
     <div>
@@ -102,6 +94,7 @@
     function updateProfileImage(src) {
         const profileImage = document.getElementById('profile-image');
         profileImage.src = src;
+        document.getElementById('file-buttons').style.display = 'block'; // 파일 버튼 보이기
     }
 
     function handlePaste(event) {
@@ -122,14 +115,6 @@
                 reader.readAsDataURL(file);
             }
         }
-    }
-
-    function showFileButtons() {
-        document.getElementById('file-buttons').style.display = 'block';
-    }
-
-    function hideFileButtons() {
-        document.getElementById('file-buttons').style.display = 'none';
     }
 
     function updateName() {
