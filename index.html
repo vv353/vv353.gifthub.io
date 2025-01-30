@@ -19,6 +19,16 @@
             width: 100px;
             height: 100px;
             margin-right: 20px;
+            cursor: pointer;
+        }
+        .file-buttons {
+            display: none;
+            position: absolute;
+            margin-top: -70px; /* 이미지 위로 위치 조정 */
+            margin-left: 120px; /* 이미지 우측 위치 조정 */
+        }
+        .file-buttons button {
+            margin-right: 5px;
         }
         .category-table {
             width: 100%;
@@ -28,6 +38,7 @@
             border: 1px solid #ccc;
             padding: 10px;
             text-align: left;
+            vertical-align: top; /* 입력란이 늘어날 때 위쪽 정렬 */
         }
         .arrow {
             cursor: pointer;
@@ -61,7 +72,14 @@
     <div class="paste-area" contenteditable="true" onpaste="handlePaste(event)">
         여기에 이미지를 붙여넣으세요 (Ctrl + V)
     </div>
-    <img id="profile-image" src="profile.jpg" alt="프로필 사진">
+    <div style="position: relative;">
+        <img id="profile-image" src="profile.jpg" alt="프로필 사진" onmouseover="showFileButtons()" onmouseout="hideFileButtons()" onclick="fileInput.click()">
+        <div class="file-buttons" id="file-buttons">
+            <input type="file" id="profile-image-input" accept="image/*" onchange="updateProfileImage()">
+            <button onclick="fileInput.click()">파일 선택</button>
+            <button onclick="document.execCommand('paste')">붙여넣기</button>
+        </div>
+    </div>
     <div>
         <input type="text" id="name-input" placeholder="이름" oninput="updateName()">
         <textarea id="introduction-input" placeholder="간단한 소개" oninput="updateIntroduction()"></textarea>
@@ -104,6 +122,14 @@
                 reader.readAsDataURL(file);
             }
         }
+    }
+
+    function showFileButtons() {
+        document.getElementById('file-buttons').style.display = 'block';
+    }
+
+    function hideFileButtons() {
+        document.getElementById('file-buttons').style.display = 'none';
     }
 
     function updateName() {
