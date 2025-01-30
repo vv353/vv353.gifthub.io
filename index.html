@@ -160,13 +160,14 @@
             const categoryList = document.getElementById('categoryList');
             const row = document.createElement('tr');
 
+            // 테이블 너비에 맞춰 각 textarea의 너비를 설정
             row.innerHTML = `
                 <td style="text-align: center;">
                     <span class="move-button" onclick="moveCategory(this, 'up')">↑</span>
                     <span class="move-button" onclick="moveCategory(this, 'down')">↓</span>
                 </td>
-                <td><textarea placeholder="카테고리" rows="2" style="width: calc(50% - 20px); resize: vertical;"></textarea></td>
-                <td><textarea placeholder="설명" rows="2" style="width: calc(50% - 20px); resize: vertical;" oninput="this.rows = Math.min(this.value.split('\n').length, 5);"></textarea></td>
+                <td><textarea placeholder="카테고리" rows="2" style="width: 100%; resize: vertical;"></textarea></td>
+                <td><textarea placeholder="설명" rows="2" style="width: 100%; resize: vertical;" oninput="this.rows = Math.min(this.value.split('\n').length, 5);"></textarea></td>
                 <td class="delete" onclick="deleteCategory(this)">x</td>
             `;
             categoryList.appendChild(row);
