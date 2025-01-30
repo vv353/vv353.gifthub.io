@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>자기소개 프로그램</title>
+    <title>MCP</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,7 +14,6 @@
         }
         .profile {
             display: flex;
-            flex-direction: column; /* 세로 방향으로 배치 */
             align-items: center;
             margin-bottom: 20px;
         }
@@ -35,9 +34,20 @@
             display: none; /* 기본적으로 숨김 */
             margin-top: 10px; /* 버튼과의 간격 */
         }
+        .profile-info {
+            margin-left: 20px; /* 프로필 사진과 이름, 소개 간격 */
+        }
+        .profile-info h2 {
+            font-size: 24px; /* 이름 크기 */
+            margin: 0; /* 기본 margin 제거 */
+        }
+        .profile-info p {
+            margin: 0; /* 기본 margin 제거 */
+        }
         .category-table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px; /* 카테고리 테이블과 프로필 간의 간격 */
         }
         .category-table td {
             border: 1px solid #ccc;
@@ -72,20 +82,25 @@
             width: 100%;
             height: 40px; /* 고정된 높이 */
         }
+        .move-button {
+            cursor: pointer;
+            margin: 0 5px; /* 여백 조정 */
+        }
     </style>
 </head>
 <body>
 
+    <h1>MCP</h1> <!-- 프로그램 이름 변경 -->
+
     <div class="profile">
         <div class="plus-icon" onclick="showFileOptions()">+</div>
+        <div class="profile-info">
+            <h2 id="nameDisplay">이름</h2>
+            <p id="bioDisplay">짧은 소개</p>
+        </div>
         <div class="file-options" id="fileOptions">
             <input type="file" id="fileInput" accept="image/*" onchange="updateProfilePic()">
             <button id="pasteButton" onclick="pasteImage()">붙여넣기</button>
-        </div>
-        <div>
-            <input type="text" id="name" placeholder="이름">
-            <br>
-            <textarea id="bio" placeholder="간단한 소개" rows="2"></textarea>
         </div>
     </div>
 
@@ -148,11 +163,27 @@
             const row = document.createElement('tr');
 
             row.innerHTML = `
+                <td>
+                    <span class="move-button" onclick="moveCategory(this, 'up')">↑</span>
+                    <span class="move-button" onclick="moveCategory(this, 'down')">↓</span>
+                </td>
                 <td><textarea placeholder="카테고리" rows="2"></textarea></td>
                 <td><textarea placeholder="설명" rows="2" oninput="this.rows = Math.min(this.value.split('\n').length, 5);"></textarea></td>
                 <td class="delete" onclick="deleteCategory(this)">x</td>
             `;
             categoryList.appendChild(row);
+        }
+
+        function moveCategory(element, direction) {
+            const row = element.closest('tr');
+            const sibling = direction === 'up' ? row.previousElementSibling : row.nextElementSibling;
+            if (sibling) {
+                if (direction === 'up') {
+                    row.parentNode.insertBefore(row, sibling);
+                } else {
+                    row.parentNode.insertBefore(sibling, row);
+                }
+            }
         }
 
         function deleteCategory(element) {
@@ -161,8 +192,8 @@
         }
 
         function saveAndShare() {
-            const name = document.getElementById('name').value;
-            const bio = document.getElementById('bio').value;
+            const name = document.getElementById('nameDisplay').textContent;
+            const bio = document.getElementById('bioDisplay').textContent;
             const categories = Array.from(document.querySelectorAll('#categoryList textarea')).map(textarea => textarea.value).join('|');
 
             const shareData = {
