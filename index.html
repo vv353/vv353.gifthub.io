@@ -95,21 +95,19 @@
         const descriptionInput = document.getElementById('description-input');
         const categoryList = document.getElementById('category-list');
 
-        if (categoryInput.value && descriptionInput.value) {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td class="arrow" onclick="moveUp(this)">↑</td>
-                <td class="arrow" onclick="moveDown(this)">↓</td>
-                <td><input type="text" value="${categoryInput.value}" oninput="updateCategory(this)"></td>
-                <td><input type="text" value="${descriptionInput.value}" oninput="updateDescription(this)"></td>
-                <td class="delete" onclick="removeCategory(this)">✖</td>
-            `;
-            categoryList.appendChild(row);
-            categoryInput.value = '';
-            descriptionInput.value = '';
-        } else {
-            alert('카테고리와 설명을 입력해주세요.');
-        }
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="arrow" onclick="moveUp(this)">↑</td>
+            <td class="arrow" onclick="moveDown(this)">↓</td>
+            <td><input type="text" value="${categoryInput.value}" oninput="updateCategory(this)"></td>
+            <td><input type="text" value="${descriptionInput.value}" oninput="updateDescription(this)"></td>
+            <td class="delete" onclick="removeCategory(this)">✖</td>
+        `;
+        categoryList.appendChild(row);
+
+        // 입력란 초기화
+        document.getElementById('category-input').value = '';
+        document.getElementById('description-input').value = '';
     }
 
     function moveUp(element) {
