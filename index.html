@@ -48,7 +48,7 @@
         }
         .profile-info textarea {
             font-size: 16px; /* 짧은 소개 크기 (카테고리와 동일) */
-            width: 300px; /* 고정된 너비 */
+            width: 100%; /* 고정된 너비 */
             resize: vertical; /* 세로로만 크기 조절 가능 */
             overflow: auto; /* 내용이 넘칠 경우 스크롤 */
         }
@@ -170,15 +170,6 @@
                 <td class="delete" onclick="deleteCategory(this)">x</td>
             `;
             categoryList.appendChild(row);
-            adjustTextareaHeight();
-        }
-
-        function adjustTextareaHeight() {
-            const textareas = document.querySelectorAll('#categoryList textarea');
-            const minHeight = 40; // 최소 높이 설정
-            textareas.forEach(textarea => {
-                textarea.style.height = `${minHeight}px`;
-            });
         }
 
         function moveCategory(element, direction) {
@@ -196,7 +187,6 @@
         function deleteCategory(element) {
             const row = element.parentElement;
             row.parentElement.removeChild(row);
-            adjustTextareaHeight(); // 높이 조정
         }
 
         function saveAndShare() {
