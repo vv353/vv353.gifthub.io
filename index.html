@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>자기소개 프로그램</title>
+    <title>MCP</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,189 +14,198 @@
         }
         .profile {
             display: flex;
-            align-items: center;
+            align-items: flex-start; /* 위쪽 정렬 */
             margin-bottom: 20px;
         }
-        .profile img {
-            border-radius: 50%;
+        .plus-icon {
             width: 100px;
             height: 100px;
-            margin-right: 20px;
+            border-radius: 50%;
+            background-color: #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            text-align: center;
+            cursor: pointer;
+            position: relative; /* 위치 조정 */
+            margin-right: 20px; /* 프로필 사진과 이름 간격 */
+        }
+        .file-options {
+            display: none; /* 기본적으로 숨김 */
+            margin-top: 10px; /* 버튼과의 간격 */
+        }
+        .profile-info {
+            display: flex;
+            flex-direction: column; /* 세로 방향으로 배치 */
+            text-align: left; /* 왼쪽 정렬 */
+        }
+        .profile-info input[type="text"] {
+            font-size: 24px; /* 이름 크기 */
+            width: 300px; /* 고정된 너비 */
+            height: 40px; /* 고정된 높이 */
+            margin-bottom: 10px; /* 아래 여백 */
+        }
+        .profile-info textarea {
+            font-size: 16px; /* 짧은 소개 크기 (카테고리와 동일) */
+            width: 300px; /* 고정된 너비 */
+            resize: vertical; /* 세로로만 크기 조절 가능 */
+            overflow: auto; /* 내용이 넘칠 경우 스크롤 */
         }
         .category-table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px; /* 카테고리 테이블과 프로필 간의 간격 */
         }
         .category-table td {
             border: 1px solid #ccc;
             padding: 10px;
-            text-align: left;
+            text-align: center; /* 가운데 정렬 */
         }
-        .arrow {
-            cursor: pointer;
-        }
-        .delete {
-            cursor: pointer;
-            color: red;
-        }
-        .input-container {
-            margin-bottom: 10px;
+        .category-table .delete {
+            text-align: center; /* X 버튼 중앙 정렬 */
+            color: red; /* X 버튼 빨간색 */
+            cursor: pointer; /* 클릭할 수 있도록 커서 변경 */
         }
         .button-container {
-            margin-top: 20px;
+            display: flex;
+            justify-content: space-between; /* 좌우 정렬 */
+            width: 100%; /* 전체 너비 사용 */
+            margin-top: 10px;
+        }
+        .add-category {
+            cursor: pointer;
+            margin-right: 10px; /* 여백 조정 */
+        }
+        .save-button {
+            margin-left: auto; /* 오른쪽 정렬 */
+            cursor: pointer;
+        }
+        .move-button {
+            cursor: pointer;
+            margin: 0 5px; /* 여백 조정 */
         }
     </style>
 </head>
 <body>
 
-<div class="profile">
-    <input type="file" id="profile-image-input" accept="image/*" onchange="updateProfileImage()">
-    <img id="profile-image" src="profile.jpg" alt="프로필 사진">
-    <div>
-        <input type="text" id="name-input" placeholder="이름" oninput="updateName()">
-        <textarea id="introduction-input" placeholder="간단한 소개" oninput="updateIntroduction()"></textarea>
+    <div class="profile">
+        <div class="plus-icon" onclick="showFileOptions()">+</div>
+        <div class="profile-info">
+            <input type="text" id="nameInput" placeholder="이름">
+            <textarea id="bioInput" placeholder="짧은 소개" rows="2"></textarea>
+        </div>
     </div>
-</div>
 
-<h3>카테고리 추가</h3>
-<div class="input-container">
-    <input type="text" id="category-input" placeholder="카테고리">
-    <input type="text" id="description-input" placeholder="설명">
-    <button onclick="addCategory()">추가</button>
-</div>
+    <div class="file-options" id="fileOptions">
+        <input type="file" id="fileInput" accept="image/*" onchange="updateProfilePic()">
+        <button id="pasteButton" onclick="pasteImage()">붙여넣기</button>
+    </div>
 
-<table class="category-table">
-    <tbody id="category-list"></tbody>
-</table>
+    <table class="category-table">
+        <tbody id="categoryList"></tbody>
+    </table>
 
-<div class="button-container">
-    <button onclick="generateLink()">링크 생성 및 공유</button>
-    <p id="share-link"></p>
-</div>
+    <div class="button-container">
+        <button class="add-category" onclick="addCategory()">+</button>
+        <button class="save-button" onclick="saveAndShare()">저장 및 공유하기</button>
+    </div>
 
-<script>
-    const categories = [];
+    <script>
+        function showFileOptions() {
+            const fileOptions = document.getElementById('fileOptions');
+            fileOptions.classList.toggle('hidden'); // 파일 선택 및 붙여넣기 버튼 표시/숨기기
+            fileOptions.style.display = fileOptions.style.display === 'none' ? 'block' : 'none'; // 토글 기능
+        }
 
-    function updateProfileImage() {
-        const fileInput = document.getElementById('profile-image-input');
-        const file = fileInput.files[0];
-        const profileImage = document.getElementById('profile-image');
+        function updateProfilePic() {
+            const fileInput = document.getElementById('fileInput');
+            const plusIcon = document.querySelector('.plus-icon');
 
-        if (file) {
+            const file = fileInput.files[0];
             const reader = new FileReader();
-            reader.onload = function(event) {
-                profileImage.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
+
+            reader.onloadend = function() {
+                plusIcon.style.backgroundImage = `url(${reader.result})`;
+                plusIcon.style.backgroundSize = 'cover'; // 이미지가 버튼을 가득 채우도록 설정
+                plusIcon.textContent = ''; // "+" 문구 제거
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
         }
-    }
 
-    function updateName() {
-        // 이름 업데이트 로직
-    }
-
-    function updateIntroduction() {
-        // 소개 업데이트 로직
-    }
-
-    function addCategory() {
-        const categoryInput = document.getElementById('category-input');
-        const descriptionInput = document.getElementById('description-input');
-        const categoryList = document.getElementById('category-list');
-
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td class="arrow" onclick="moveUp(this)">↑</td>
-            <td class="arrow" onclick="moveDown(this)">↓</td>
-            <td><input type="text" value="${categoryInput.value}" oninput="updateCategory(this)"></td>
-            <td><input type="text" value="${descriptionInput.value}" oninput="updateDescription(this)"></td>
-            <td class="delete" onclick="removeCategory(this)">✖</td>
-        `;
-        categoryList.appendChild(row);
-
-        categories.push({ category: categoryInput.value, description: descriptionInput.value });
-        categoryInput.value = '';
-        descriptionInput.value = '';
-    }
-
-    function moveUp(element) {
-        const row = element.parentElement;
-        const previousRow = row.previousElementSibling;
-        if (previousRow) {
-            row.parentElement.insertBefore(row, previousRow);
-        }
-    }
-
-    function moveDown(element) {
-        const row = element.parentElement;
-        const nextRow = row.nextElementSibling;
-        if (nextRow) {
-            row.parentElement.insertBefore(nextRow, row);
-        }
-    }
-
-    function removeCategory(element) {
-        const row = element.parentElement;
-        const index = Array.from(row.parentNode.children).indexOf(row);
-        categories.splice(index, 1);
-        row.remove();
-    }
-
-    function updateCategory(input) {
-        const index = Array.from(input.parentNode.parentNode.children).indexOf(input.parentNode.parentNode);
-        categories[index].category = input.value;
-    }
-
-    function updateDescription(input) {
-        const index = Array.from(input.parentNode.parentNode.children).indexOf(input.parentNode.parentNode);
-        categories[index].description = input.value;
-    }
-
-    function generateLink() {
-        const name = document.getElementById('name-input').value;
-        const introduction = document.getElementById('introduction-input').value;
-        const profileImage = document.getElementById('profile-image').src;
-
-        const data = {
-            name,
-            introduction,
-            profileImage,
-            categories
-        };
-
-        const jsonData = encodeURIComponent(JSON.stringify(data));
-        const link = `${window.location.origin}/?data=${jsonData}`;
-
-        document.getElementById('share-link').innerHTML = `<a href="${link}" target="_blank">링크 복사</a>`;
-    }
-
-    function loadSharedData() {
-        const params = new URLSearchParams(window.location.search);
-        const data = params.get('data');
-
-        if (data) {
-            const parsedData = JSON.parse(decodeURIComponent(data));
-            document.getElementById('name-input').value = parsedData.name;
-            document.getElementById('introduction-input').value = parsedData.introduction;
-            document.getElementById('profile-image').src = parsedData.profileImage;
-
-            parsedData.categories.forEach(category => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="arrow" onclick="moveUp(this)">↑</td>
-                    <td class="arrow" onclick="moveDown(this)">↓</td>
-                    <td><input type="text" value="${category.category}" oninput="updateCategory(this)"></td>
-                    <td><input type="text" value="${category.description}" oninput="updateDescription(this)"></td>
-                    <td class="delete" onclick="removeCategory(this)">✖</td>
-                `;
-                document.getElementById('category-list').appendChild(row);
+        function pasteImage() {
+            navigator.clipboard.read().then(function(items) {
+                for (const item of items) {
+                    if (item.types.includes('image/png')) {
+                        const blob = item.getType('image/png');
+                        const reader = new FileReader();
+                        reader.onloadend = function() {
+                            const plusIcon = document.querySelector('.plus-icon');
+                            plusIcon.style.backgroundImage = `url(${reader.result})`;
+                            plusIcon.style.backgroundSize = 'cover'; // 이미지가 버튼을 가득 채우도록 설정
+                            plusIcon.textContent = ''; // "+" 문구 제거
+                        }
+                        blob.then(function(b) {
+                            reader.readAsDataURL(b);
+                        });
+                    }
+                }
             });
         }
-    }
 
-    window.onload = loadSharedData;
+        function addCategory() {
+            const categoryList = document.getElementById('categoryList');
+            const row = document.createElement('tr');
 
-</script>
+            row.innerHTML = `
+                <td style="text-align: center;">
+                    <span class="move-button" onclick="moveCategory(this, 'up')">↑</span>
+                    <span class="move-button" onclick="moveCategory(this, 'down')">↓</span>
+                </td>
+                <td><textarea placeholder="카테고리" rows="2"></textarea></td>
+                <td><textarea placeholder="설명" rows="2" oninput="this.rows = Math.min(this.value.split('\n').length, 5);"></textarea></td>
+                <td class="delete" onclick="deleteCategory(this)">x</td>
+            `;
+            categoryList.appendChild(row);
+        }
+
+        function moveCategory(element, direction) {
+            const row = element.closest('tr');
+            const sibling = direction === 'up' ? row.previousElementSibling : row.nextElementSibling;
+            if (sibling) {
+                if (direction === 'up') {
+                    row.parentNode.insertBefore(row, sibling);
+                } else {
+                    row.parentNode.insertBefore(sibling, row);
+                }
+            }
+        }
+
+        function deleteCategory(element) {
+            const row = element.parentElement;
+            row.parentElement.removeChild(row);
+        }
+
+        function saveAndShare() {
+            const name = document.getElementById('nameInput').value;
+            const bio = document.getElementById('bioInput').value;
+            const categories = Array.from(document.querySelectorAll('#categoryList textarea')).map(textarea => textarea.value).join('|');
+
+            const shareData = {
+                name: name,
+                bio: bio,
+                categories: categories
+            };
+
+            const encodedData = encodeURIComponent(JSON.stringify(shareData));
+            const link = `${window.location.origin}/view?data=${encodedData}`;
+
+            alert(`링크가 생성되었습니다: ${link}`);
+        }
+    </script>
 
 </body>
 </html>
