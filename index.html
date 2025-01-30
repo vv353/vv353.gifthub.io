@@ -14,8 +14,8 @@
         }
         .profile {
             display: flex;
+            flex-direction: column; /* 세로 방향으로 배치 */
             align-items: center;
-            justify-content: center; /* 프로필 사진과 관련 요소를 가운데 정렬 */
             margin-bottom: 20px;
         }
         .plus-icon {
@@ -33,14 +33,7 @@
         }
         .file-options {
             display: none; /* 기본적으로 숨김 */
-            position: absolute; /* 플러스 아이콘 아래에 위치 */
-            top: 110%; /* 플러스 아이콘 아래로 약간 떨어지게 설정 */
-            left: 50%;
-            transform: translateX(-50%); /* 중앙 정렬 */
-            margin-top: 10px;
-        }
-        .hidden {
-            display: none;
+            margin-top: 10px; /* 버튼과의 간격 */
         }
         .category-table {
             width: 100%;
@@ -109,6 +102,7 @@
         function showFileOptions() {
             const fileOptions = document.getElementById('fileOptions');
             fileOptions.classList.toggle('hidden'); // 파일 선택 및 붙여넣기 버튼 표시/숨기기
+            fileOptions.style.display = fileOptions.style.display === 'none' ? 'block' : 'none'; // 토글 기능
         }
 
         function updateProfilePic() {
